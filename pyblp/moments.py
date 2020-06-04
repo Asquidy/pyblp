@@ -224,8 +224,8 @@ class DiversionProbabilityMoment(Moment):
     Parameters
     ----------
     product_id1 : `object`
-        ID of the first choice product :math:`j` or ``None`` to denote the outside option :math:`j = 0`. There must be
-        exactly one of this ID in the ``product_ids`` field of ``product_data`` in :class:`Problem` or
+        ID(s) of the first choice products :math:`j` or ``None`` to denote the outside option :math:`j = 0`. There must be
+        exactly one of each of these ID(s) in the ``product_ids`` field of ``product_data`` in :class:`Problem` or
         :class:`Simulation` for each market over which this micro moment will be averaged.
     product_id2 : `object`
         ID of the second choice product :math:`k` or ``None`` to denote the outside option :math:`j = 0`. If not
@@ -248,7 +248,7 @@ class DiversionProbabilityMoment(Moment):
     product_id2: Optional[Any]
 
     def __init__(
-            self, product_id1: Any, product_id2: Optional[Any], value: float,
+            self, product_id1: Any, product_id2: Optional[Any], value: Sequence,
             market_ids: Optional[Sequence] = None) -> None:
         """Validate information about the moment to the greatest extent possible without an economy instance."""
         super().__init__(value, market_ids)
@@ -266,7 +266,9 @@ class DiversionProbabilityMoment(Moment):
     def _validate(self, economy: 'Economy') -> None:
         """Check that matrix indices are valid in the economy."""
         super()._validate(economy)
-        economy._validate_product_id(self.product_id1, self.market_ids)
+        for this_product in product_id1:
+            economy._validate_product_id(self.this_product, self.market_ids)
+        
         economy._validate_product_id(self.product_id2, self.market_ids)
 
 

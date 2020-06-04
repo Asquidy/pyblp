@@ -276,7 +276,8 @@ class Market(Container):
         negative the maximum utility for each agent, and if utility_reduction is specified, it should be values that
         have already been subtracted from the specified utility for each agent. If the numerator is specified, it will
         be used as the numerator in the non-nested logit expression. If eliminate_outside is True, eliminate the outside
-        option from the choice set. If eliminate_product is specified, eliminate the product associated with the
+        option from the choice set. If 
+        is specified, eliminate the product associated with the
         specified index from the choice set.
         """
         if delta is None:
@@ -324,7 +325,8 @@ class Market(Container):
 
         # optionally eliminate a product from the choice set
         if eliminate_product is not None:
-            exp_utilities[eliminate_product] = 0
+            for each_product in eliminate_product:
+                exp_utilities[eliminate_product] = 0
 
         # compute standard probabilities
         if self.H == 0:
