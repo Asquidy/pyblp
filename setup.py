@@ -15,7 +15,7 @@ assert version_match is not None
 
 # set up the package
 setup(
-    name='pyblp_alt',
+    name='pyblp',
     packages=find_packages(),
     python_requires='>=3.6',
     install_requires=read('requirements.txt').splitlines(),
