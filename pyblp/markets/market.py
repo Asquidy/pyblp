@@ -325,7 +325,7 @@ class Market(Container):
 
         # optionally eliminate a product from the choice set
         if eliminate_product is not None:
-            for each_product in eliminate_product[0]:
+            for each_product in eliminate_product:
                 exp_utilities[each_product] = 0
 
         # compute standard probabilities
