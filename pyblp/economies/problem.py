@@ -1255,7 +1255,7 @@ class Problem(ProblemEconomy):
     ES : `int`
         Number of absorbed dimensions of supply-side fixed effects, :math:`E_S`.
     H : `int`
-        Number of nesting groups, :math:`H`.
+         Number of nesting groups, :math:`H`.
 
     Examples
     --------

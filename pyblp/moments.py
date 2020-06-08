@@ -266,8 +266,8 @@ class DiversionProbabilityMoment(Moment):
     def _validate(self, economy: 'Economy') -> None:
         """Check that matrix indices are valid in the economy."""
         super()._validate(economy)
-        for this_product in product_id1:
-            economy._validate_product_id(self.this_product, self.market_ids)
+        for this_product in self.product_id1:
+            economy._validate_product_id(this_product, self.market_ids)
         
         economy._validate_product_id(self.product_id2, self.market_ids)
 
