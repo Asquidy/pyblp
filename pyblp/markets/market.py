@@ -325,7 +325,7 @@ class Market(Container):
 
         # optionally eliminate a product from the choice set
         if eliminate_product is not None:
-            for each_product in eliminate_product:
+            for each_product in eliminate_product[0]:
                 exp_utilities[eliminate_product] = 0
 
         # compute standard probabilities
@@ -1006,9 +1006,8 @@ class Market(Container):
             if isinstance(moment, DiversionProbabilityMoment):
                 j = self.get_product(moment.product_id1)
                 if j not in eliminated_probabilities:
-                    j = np.array(j)
                     eliminated_probabilities[j], eliminated_conditionals[j] = self.compute_probabilities(
-                        delta, eliminate_product=j
+                        delta, eliminate_product=np.array(j)
                     )
 
         # pre-compute second choice probabilities conditional on purchasing an inside good (also compute the sum of
