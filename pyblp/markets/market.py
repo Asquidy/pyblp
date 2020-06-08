@@ -1019,9 +1019,8 @@ class Market(Container):
             assert inside_probabilities is not None
             inside_eliminated_sum = np.zeros((self.J, self.I), options.dtype)
             for j in range(self.J):
-                j = np.array(j)
                 inside_eliminated_probabilities[j], inside_eliminated_conditionals[j] = self.compute_probabilities(
-                    delta, eliminate_outside=True, eliminate_product=j
+                    delta, eliminate_outside=True, eliminate_product=np.array(j)
                 )
                 inside_eliminated_sum += inside_probabilities[[j]] * inside_eliminated_probabilities[j]
 
