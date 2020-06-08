@@ -270,7 +270,7 @@ class Market(Container):
     def compute_probabilities(
             self, delta: Array = None, mu: Optional[Array] = None, linear: bool = True, safe: bool = True,
             utility_reduction: Optional[Array] = None, numerator: Optional[Array] = None,
-            eliminate_outside: bool = False, eliminate_product: Optional[int] = None) -> Tuple[Array, Optional[Array]]:
+            eliminate_outside: bool = False, eliminate_product: Optional[Array] = None) -> Tuple[Array, Optional[Array]]:
         """Compute choice probabilities. By default, use unchanged delta and mu values. If linear is False, delta and mu
         must be specified and already be exponentiated. If safe is True, scale the logit equation by the exponential of
         negative the maximum utility for each agent, and if utility_reduction is specified, it should be values that
@@ -1006,6 +1006,7 @@ class Market(Container):
             if isinstance(moment, DiversionProbabilityMoment):
                 j = self.get_product(moment.product_id1)
                 if j not in eliminated_probabilities:
+                    j = np.array(j)
                     eliminated_probabilities[j], eliminated_conditionals[j] = self.compute_probabilities(
                         delta, eliminate_product=j
                     )
@@ -1019,6 +1020,7 @@ class Market(Container):
             assert inside_probabilities is not None
             inside_eliminated_sum = np.zeros((self.J, self.I), options.dtype)
             for j in range(self.J):
+                j = np.array(j)
                 inside_eliminated_probabilities[j], inside_eliminated_conditionals[j] = self.compute_probabilities(
                     delta, eliminate_outside=True, eliminate_product=j
                 )
