@@ -103,8 +103,7 @@ class ResultsMarket(Market):
         errors: List[Error] = []
         ratios = np.zeros((self.J, self.J), options.dtype)
         for j in range(self.J):
-            j = np.array(j)
-            shares_without_j = self.compute_probabilities(eliminate_product=j)[0] @ self.agents.weights
+            shares_without_j = self.compute_probabilities(eliminate_product=np.array(j))[0] @ self.agents.weights
             ratios[j] = (shares_without_j - self.products.shares).flat / self.products.shares[j]
             ratios[j, j] = -ratios[j].sum()
         return ratios, errors
