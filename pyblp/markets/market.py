@@ -1002,6 +1002,7 @@ class Market(Container):
         # pre-compute second choice probabilities
         eliminated_probabilities: Dict[int, Array] = {}
         eliminated_conditionals: Dict[int, Optional[Array]] = {}
+        print(type(self.moments.micro_moments))
         for m, moment in enumerate(self.moments.micro_moments):
             if isinstance(moment, DiversionProbabilityMoment):
                 j_array = [self.get_product(j) for j in moment.product_id1]
