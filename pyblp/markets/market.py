@@ -1002,14 +1002,14 @@ class Market(Container):
         # pre-compute second choice probabilities
         eliminated_probabilities: Dict[int, Array] = {}
         eliminated_conditionals: Dict[int, Optional[Array]] = {}
-        m = 0
-        for moment in self.moments.micro_moments:
+        # m = 0
+        for m, moment in self.moments.micro_moments:
             if isinstance(moment, DiversionProbabilityMoment):
                 j_array = [self.get_product(j) for j in moment.product_id1]
                 eliminated_probabilities[m], eliminated_conditionals[m] = self.compute_probabilities(
                     delta, eliminate_product=np.array(j_array)
                 )
-                m += 1
+        #       m += 1
         # pre-compute second choice probabilities conditional on purchasing an inside good (also compute the sum of
         #   inside probability products over all first choices)
         inside_eliminated_sum = None
