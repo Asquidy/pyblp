@@ -1002,14 +1002,12 @@ class Market(Container):
         # pre-compute second choice probabilities
         eliminated_probabilities: Dict[int, Array] = {}
         eliminated_conditionals: Dict[int, Optional[Array]] = {}
-        for moment in self.moments.micro_moments:
+        for m, moment in self.moments.micro_moments:
             if isinstance(moment, DiversionProbabilityMoment):
-                j = self.get_product(moment.product_id1)
-                if j not in eliminated_probabilities:
-                    eliminated_probabilities[j], eliminated_conditionals[j] = self.compute_probabilities(
-                        delta, eliminate_product=np.array(j)
-                    )
-
+                j_array = [self.get_product(j) for j in self.product_id1]
+                eliminated_probabilities[m], eliminated_conditionals[m] = self.compute_probabilities(
+                    delta, eliminate_product=np.array(j_array)
+                )
         # pre-compute second choice probabilities conditional on purchasing an inside good (also compute the sum of
         #   inside probability products over all first choices)
         inside_eliminated_sum = None
@@ -1020,7 +1018,7 @@ class Market(Container):
             inside_eliminated_sum = np.zeros((self.J, self.I), options.dtype)
             for j in range(self.J):
                 inside_eliminated_probabilities[j], inside_eliminated_conditionals[j] = self.compute_probabilities(
-                    delta, eliminate_outside=True, eliminate_product=np.array(j)
+                    delta, eliminate_outside=True, eliminate_product=np.array([j])
                 )
                 inside_eliminated_sum += inside_probabilities[[j]] * inside_eliminated_probabilities[j]
 
@@ -1028,7 +1026,7 @@ class Market(Container):
         micro = np.zeros((self.moments.MM, 1), options.dtype)
         for m, moment in enumerate(self.moments.micro_moments):
             micro[m] = self.agents.weights.T @ self.compute_agent_micro_moment(
-                moment, probabilities, inside_probabilities, eliminated_probabilities, inside_eliminated_sum
+                moment, probabilities, inside_probabilities, eliminated_probabilities, inside_eliminated_sum, m
             )
 
         return (
@@ -1039,7 +1037,7 @@ class Market(Container):
 
     def compute_agent_micro_moment(
             self, moment: Moment, probabilities: Optional[Array], inside_probabilities: Optional[Array],
-            eliminated_probabilities: Dict[int, Array], inside_eliminated_sum: Optional[Array]) -> Array:
+            eliminated_probabilities: Dict[int, Array], inside_eliminated_sum: Optional[Array], m: Optional[int]) -> Array:
         """Compute agent-specific micro moments, which will be aggregated up into means or covariances."""
 
         # match a demographic expectation for agents who choose the outside good
@@ -1077,18 +1075,18 @@ class Market(Container):
 
         # match the second choice probability of the outside good for agents who choose a certain inside good
         if isinstance(moment, DiversionProbabilityMoment) and moment.product_id2 is None:
-            j = self.get_product(moment.product_id1)
-            eliminated_outside_probabilities = 1 - eliminated_probabilities[j].sum(axis=0, keepdims=True)
+            j_array = [self.get_product(moment.product_id1) for j in moment.product_id1]
+            eliminated_outside_probabilities = 1 - eliminated_probabilities[m].sum(axis=0, keepdims=True)
             outside_share = 1 - self.products.shares.sum()
             numerator = eliminated_outside_probabilities.T - outside_share
-            return numerator / self.products.shares[j] - moment.value
+            return numerator / self.products.shares[j_array] - moment.value
 
         # match the second choice probability of a certain inside good for agents who choose a certain inside good
         if isinstance(moment, DiversionProbabilityMoment):
-            j = self.get_product(moment.product_id1)
+            j_array = [self.get_product(moment.product_id1) for j in moment.product_id1]
             k = self.get_product(moment.product_id2)
-            numerator = eliminated_probabilities[j][[k]].T - self.products.shares[k]
-            return numerator / self.products.shares[j] - moment.value
+            numerator = eliminated_probabilities[m][[k]].T - self.products.shares[k]
+            return numerator / self.products.shares[j_array] - moment.value
 
         # match a covariance between product characteristics of first and second choices
         assert isinstance(moment, DiversionCovarianceMoment)
