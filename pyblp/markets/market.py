@@ -1004,7 +1004,7 @@ class Market(Container):
         eliminated_conditionals: Dict[int, Optional[Array]] = {}
         for m, moment in enumerate(self.moments.micro_moments):
             if isinstance(moment, DiversionProbabilityMoment):
-                j_array = [self.get_product(j) for j in self.product_id1]
+                j_array = [self.get_product(j) for j in moment.product_id1]
                 eliminated_probabilities[m], eliminated_conditionals[m] = self.compute_probabilities(
                     delta, eliminate_product=np.array(j_array)
                 )
