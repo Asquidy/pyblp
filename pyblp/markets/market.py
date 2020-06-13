@@ -1002,14 +1002,13 @@ class Market(Container):
         # pre-compute second choice probabilities
         eliminated_probabilities: Dict[int, Array] = {}
         eliminated_conditionals: Dict[int, Optional[Array]] = {}
-        # m = 0
         for m, moment in enumerate(self.moments.micro_moments):
             if isinstance(moment, DiversionProbabilityMoment):
                 j_array = [self.get_product(j) for j in moment.product_id1]
                 eliminated_probabilities[m], eliminated_conditionals[m] = self.compute_probabilities(
                     delta, eliminate_product=np.array(j_array)
                 )
-        #       m += 1
+
         # pre-compute second choice probabilities conditional on purchasing an inside good (also compute the sum of
         #   inside probability products over all first choices)
         inside_eliminated_sum = None
@@ -1077,7 +1076,7 @@ class Market(Container):
 
         # match the second choice probability of the outside good for agents who choose a certain inside good
         if isinstance(moment, DiversionProbabilityMoment) and moment.product_id2 is None:
-            j_array = [self.get_product(moment.product_id1) for j in moment.product_id1]
+            j_array = [self.get_product(j) for j in moment.product_id1]
             eliminated_outside_probabilities = 1 - eliminated_probabilities[m].sum(axis=0, keepdims=True)
             outside_share = 1 - self.products.shares.sum()
             numerator = eliminated_outside_probabilities.T - outside_share
@@ -1085,7 +1084,7 @@ class Market(Container):
 
         # match the second choice probability of a certain inside good for agents who choose a certain inside good
         if isinstance(moment, DiversionProbabilityMoment):
-            j_array = [self.get_product(moment.product_id1) for j in moment.product_id1]
+            j_array = [self.get_product(j) for j in moment.product_id1]
             k = self.get_product(moment.product_id2)
             numerator = eliminated_probabilities[m][[k]].T - self.products.shares[k]
             return numerator / self.products.shares[j_array] - moment.value
