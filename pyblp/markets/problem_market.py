@@ -346,7 +346,7 @@ class ProblemMarket(Market):
         demeaned_agent_micro = np.zeros((self.I, self.moments.MM), options.dtype)
         for m, moment in enumerate(self.moments.micro_moments):
             agent_micro_m = self.compute_agent_micro_moment(
-                moment, probabilities, inside_probabilities, eliminated_probabilities, inside_eliminated_sum
+                moment, probabilities, inside_probabilities, eliminated_probabilities, inside_eliminated_sum, m
             )
             demeaned_agent_micro[:, [m]] = agent_micro_m - self.agents.weights.T @ agent_micro_m
 
