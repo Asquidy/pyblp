@@ -1080,14 +1080,14 @@ class Market(Container):
             eliminated_outside_probabilities = 1 - eliminated_probabilities[m].sum(axis=0, keepdims=True)
             outside_share = 1 - self.products.shares.sum()
             numerator = eliminated_outside_probabilities.T - outside_share
-            return numerator / self.products.shares[j_array] - moment.value
+            return numerator / self.products.shares[j_array].sum() - moment.value
 
         # match the second choice probability of a certain inside good for agents who choose a certain inside good
         if isinstance(moment, DiversionProbabilityMoment):
             j_array = [self.get_product(j) for j in moment.product_id1]
             k = self.get_product(moment.product_id2)
             numerator = eliminated_probabilities[m][[k]].T - self.products.shares[k]
-            return numerator / self.products.shares[j_array] - moment.value
+            return numerator / self.products.shares[j_array].sum() - moment.value
 
         # match a covariance between product characteristics of first and second choices
         assert isinstance(moment, DiversionCovarianceMoment)
