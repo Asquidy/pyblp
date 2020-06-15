@@ -1008,6 +1008,9 @@ class Market(Container):
                 eliminated_probabilities[m], eliminated_conditionals[m] = self.compute_probabilities(
                     delta, eliminate_product=np.array(j_array)
                 )
+            else:
+                eliminated_probabilities[m] = {}
+                eliminated_conditionals[m] = {}
 
         # pre-compute second choice probabilities conditional on purchasing an inside good (also compute the sum of
         #   inside probability products over all first choices)

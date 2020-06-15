@@ -166,13 +166,6 @@ class ProblemMarket(Market):
                 inside_probabilities, inside_conditionals
             )
 
-        # pre-compute the same but for second choice probabilities
-        eliminated_tensors = {}
-        for j in eliminated_probabilities:
-            eliminated_tensors[j], _ = self.compute_probabilities_by_xi_tensor(
-                eliminated_probabilities[j], eliminated_conditionals[j]
-            )
-
         # pre-compute the same but for the sum of inside probability products over all first choices
         inside_eliminated_sum_tensor = None
         if inside_eliminated_probabilities:
@@ -207,13 +200,6 @@ class ProblemMarket(Market):
                     parameter, inside_probabilities, inside_conditionals, delta
                 )
 
-            # compute the same but for second choice probabilities
-            eliminated_tangents = {}
-            for j in eliminated_probabilities:
-                eliminated_tangents[j], _ = self.compute_probabilities_by_parameter_tangent(
-                    parameter, eliminated_probabilities[j], eliminated_conditionals[j], delta
-                )
-
             # compute the same but for the sum of inside probability products over all first choices
             inside_eliminated_sum_tangent = None
             if inside_eliminated_probabilities:
@@ -230,6 +216,22 @@ class ProblemMarket(Market):
 
             # fill the gradient of micro moments with respect to the parameter
             for m, moment in enumerate(self.moments.micro_moments):
+                eliminated_tensors = {}
+                eliminated_tangents = {}
+
+                if eliminated_conditionals[m] is None:
+                    this_conditional = None
+
+                if isinstance(moment, DiversionProbabilityMoment):
+                    # pre-compute tensor for remaining choice probabilities
+                    eliminated_tensors, _ = self.compute_probabilities_by_xi_tensor(
+                        eliminated_probabilities[m], this_conditional
+                    )
+                    # compute tangent for remaining probabilities
+                    eliminated_tangents, _ = self.compute_probabilities_by_parameter_tangent(
+                        parameter, eliminated_probabilities[m], this_conditional, delta
+                    )
+
                 tangent_m, jacobian_m = self.compute_agent_micro_moment_derivatives(
                     moment, probabilities_tensor, probabilities_tangent, inside_probabilities, inside_tensor,
                     inside_tangent, eliminated_tensors, eliminated_tangents, inside_eliminated_sum,
@@ -295,19 +297,19 @@ class ProblemMarket(Market):
 
         # handle the second choice probability of the outside good for agents who choose a certain inside good
         if isinstance(moment, DiversionProbabilityMoment) and moment.product_id2 is None:
-            j = self.get_product(moment.product_id1)
-            eliminated_outside_tangent = -eliminated_tangents[j].sum(axis=0, keepdims=True)
-            eliminated_outside_tensor = -eliminated_tensors[j].sum(axis=1)
-            tangent = eliminated_outside_tangent.T / self.products.shares[j]
-            jacobian = eliminated_outside_tensor.T / self.products.shares[j]
+            j_array = [self.get_product(j) for j in moment.product_id1]
+            eliminated_outside_tangent = -eliminated_tangents.sum(axis=0, keepdims=True)
+            eliminated_outside_tensor = -eliminated_tensors.sum(axis=1)
+            tangent = eliminated_outside_tangent.T / self.products.shares[j_array].sum()
+            jacobian = eliminated_outside_tensor.T / self.products.shares[j_array].sum()
             return tangent, jacobian
 
         # handle the second choice probability of a certain inside good for agents who choose a certain inside good
         if isinstance(moment, DiversionProbabilityMoment):
-            j = self.get_product(moment.product_id1)
+            j_array = [self.get_product(j) for j in moment.product_id1]
             k = self.get_product(moment.product_id2)
-            tangent = eliminated_tangents[j][[k]].T / self.products.shares[j]
-            jacobian = eliminated_tensors[j][:, k, :].T / self.products.shares[j]
+            tangent = eliminated_tangents[[k]].T / self.products.shares[j_array].sum()
+            jacobian = eliminated_tensors[:, k, :].T / self.products.shares[j_array].sum()
             return tangent, jacobian
 
         # handle a covariance between product characteristics of first and second choices
