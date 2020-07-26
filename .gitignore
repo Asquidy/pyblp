@@ -23,6 +23,7 @@
 .pydevproject
 .spyderproject
 .ipynb_checkpoints
+venv/
 
 # compiled source files
 *.a

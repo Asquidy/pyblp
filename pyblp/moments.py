@@ -43,6 +43,9 @@ class Moment(StringRepresentation):
         """Format information about the markets associated with the micro moment as a string."""
         if self.market_ids is None:
             return "All"
+        if len(self.market_ids) == 1:
+            return self.market_ids[0]
+
         return ", ".join(str(t) for t in self.market_ids)
 
     def _format_moment(self) -> str:
@@ -266,8 +269,26 @@ class DiversionProbabilityMoment(Moment):
     def _validate(self, economy: 'Economy') -> None:
         """Check that matrix indices are valid in the economy."""
         super()._validate(economy)
+
+        # if self.market_ids is None:
+        #     these_market_ids = economy.unique_market_ids
+        # else:
+        #     these_market_ids = self.market_ids
+        #
+        # for t in these_market_ids:
+        #     count = 0
+        #     if self.product_id1 is not None:
+        #         for this_product in self.product_id1:
+        #             count += (self.products.product_ids[self._product_market_indices[t]] == this_product).sum()
+        #         if count == 0:
+        #             raise ValueError(
+        #                 f"None of the producs are in market '{t}': "
+        #                 f"{list(sorted(self.products.product_ids[self._product_market_indices[t]]))}."
+        #             )
+
         for this_product in self.product_id1:
-            economy._validate_product_id(this_product, self.market_ids)
+             economy._validate_product_id(this_product, self.market_ids)
+
         
         economy._validate_product_id(self.product_id2, self.market_ids)
 
