@@ -469,8 +469,8 @@ class ProblemEconomy(Economy):
         # validate and structure micro moments before outputting related information
         moments = EconomyMoments(self, micro_moments)
         if moments.MM > 0:
-            output("")
-            output(moments.format("Micro Moments"))
+            # output("")
+            # output(moments.format("Micro Moments"))
             if extra_micro_covariances is not None:
                 extra_micro_covariances = np.c_[np.asarray(extra_micro_covariances, options.dtype)]
                 if extra_micro_covariances.shape != (moments.MM, moments.MM):

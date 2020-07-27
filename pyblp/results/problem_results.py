@@ -457,8 +457,8 @@ class ProblemResults(Results):
             self.sigma_squared, self.sigma_se, self.pi_se, self.rho_se, self.beta_se, self.gamma_se,
             self.sigma_squared_se
         ))
-        if self._moments.MM > 0:
-            sections.append(self._moments.format("Micro Moment Values", self.micro))
+        # if self._moments.MM > 0:
+        #    sections.append(self._moments.format("Micro Moment Values", self.micro))
 
         # join the sections into a single string
         return "\n\n".join(sections)
