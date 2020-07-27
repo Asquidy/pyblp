@@ -37,7 +37,7 @@ class Moment(StringRepresentation):
 
     def __str__(self) -> str:
         """Format information about the micro moment as a string."""
-        ## return f"{self._format_markets()}: {self._format_moment()}"
+        return f"{self._format_markets()}: {self._format_moment()}"
 
     def _format_markets(self) -> str:
         """Format information about the markets associated with the micro moment as a string."""
