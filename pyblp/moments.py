@@ -45,7 +45,6 @@ class Moment(StringRepresentation):
             return "All"
         if len(self.market_ids) == 1:
             return self.market_ids[0]
-
         return ", ".join(str(t) for t in self.market_ids)
 
     def _format_moment(self) -> str:
