@@ -1566,9 +1566,9 @@ class Progress(InitialProgress):
         values.append(", ".join(format_number(x) for x in self.theta))
 
         # add information about micro moments
-        # if self.moments.MM > 0:
-        #    header.append(("Micro", "Moments"))
-        #    values.append(", ".join(format_number(x) for x in self.micro))
+        if self.moments.MM > 0:
+            header.append(("Micro", "Moments"))
+            values.append(", ".join(format_number(x) for x in self.micro))
 
         # format the table
         lines.append(format_table(header, values, include_border=False, include_header=evaluations == 1))
