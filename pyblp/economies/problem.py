@@ -52,7 +52,7 @@ class ProblemEconomy(Economy):
             delta_behavior: str = 'first', iteration: Optional[Iteration] = None, fp_type: str = 'safe_linear',
             shares_bounds: Optional[Tuple[Any, Any]] = (1e-300, None), costs_bounds: Optional[Tuple[Any, Any]] = None,
             W: Optional[Any] = None, center_moments: bool = True, W_type: str = 'robust', se_type: str = 'robust',
-            micro_moments: Sequence[Moment] = (), extra_micro_covariances: Optional[Any] = None) -> ProblemResults:
+            micro_moments: Sequence[Moment] = (), extra_micro_covariances: Optional[Any] = None, compute_se: bool = True) -> ProblemResults:
         r"""Solve the problem.
 
         The problem is solved in one or more GMM steps. During each step, any parameters in :math:`\theta` are optimized
@@ -422,7 +422,8 @@ class ProblemEconomy(Economy):
             in :eq:`averaged_micro_moment_covariances`, which is used to update the weighting matrix and compute
             standard errors. By default, this matrix is assumed to be zero. It should be specified if, for example,
             micro moments were computed with substantial sampling error.
-
+        compute_se: bool = `boolean, optional`
+            Should solve function compute standard error. Only set to False if want a quick objective return.
         Returns
         -------
         `ProblemResults`
@@ -625,6 +626,9 @@ class ProblemEconomy(Economy):
                 output("Updating the weighting matrix ...")
             else:
                 output("Estimating standard errors ...")
+                if not compute_se:
+                    compute_gradient = False
+
             final_progress = compute_step_progress(
                 theta, progress, compute_gradient, compute_hessian, compute_micro_covariances
             )
