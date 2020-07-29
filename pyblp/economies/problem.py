@@ -627,11 +627,11 @@ class ProblemEconomy(Economy):
             else:
                 output("Estimating standard errors ...")
 
-            # if not compute_se:
-            # compute_gradient = False
+            if not compute_se:
+                compute_gradient = False
 
             final_progress = compute_step_progress(
-                theta, progress, compute_se, compute_hessian, compute_micro_covariances
+                theta, progress, compute_gradient, compute_hessian, compute_micro_covariances
             )
             optimization_stats.evaluations += 1
             results = ProblemResults(
